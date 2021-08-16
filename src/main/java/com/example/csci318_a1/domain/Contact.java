@@ -48,4 +48,37 @@ public class Contact {
     public void setPosition(String position) {
         this.position = position;
     }
+
+    public void setContact(String phone, String name, String email, String position)
+    {
+        if(phone != null && phone != "")
+        {
+            setPhone(phone);
+        }
+        if(name != null && name != "")
+        {
+            setPhone(name);
+        }
+        if(email != null && email != "")
+        {
+            setPhone(email);
+        }
+        if(position != null && position != "")
+        {
+            setPhone(position);
+        }
+    }
+
+    public void printContact(int numOfTab)
+    {
+        String tab = "";
+        for(int i = 0; i < numOfTab; i++)
+        {
+            tab += "\t";
+        }
+        System.out.println(tab + "Phone: \t" + name );
+        System.out.println(tab + "Name: \t" + phone);
+        System.out.println(tab + "E-mail: \t" + email);
+        System.out.println(tab + "Position: \t" + position);
+    }
 }
