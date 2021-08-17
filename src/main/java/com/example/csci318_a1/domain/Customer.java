@@ -1,14 +1,21 @@
 package com.example.csci318_a1.domain;
 
+import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "Customer")
+@Data
 public class Customer {
     @Id
-    @Column (unique = true)
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "companyName",unique = true)
     private String companyName;
-    @Column
     private String address;
     @Column
     private String country;
@@ -18,13 +25,24 @@ public class Customer {
     @OneToMany(mappedBy = "clz")
     private List<Contact> contactList;
 
+    public Customer() { }
+
+    public Customer(String companyName, String address, String country) {
+        this.companyName = companyName;
+        this.address = address;
+        this.country = country;
+        contactList = new ArrayList<Contact>() {};
+    }
 
     public String getCompanyName() {
         return companyName;
     }
 
     public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+        if(companyName != null && companyName != "")
+        {
+            this.companyName = companyName;
+        }
     }
 
     public String getAddress() {
@@ -32,7 +50,10 @@ public class Customer {
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        if(address != null && address != "")
+        {
+            this.address = address;
+        }
     }
 
     public String getCountry() {
@@ -40,7 +61,10 @@ public class Customer {
     }
 
     public void setCountry(String country) {
-        this.country = country;
+        if(country != null && country != "")
+        {
+            this.country = country;
+        }
     }
 
     public List<Contact> getContactList() {
@@ -49,11 +73,17 @@ public class Customer {
 
     public Contact findContectByPhone(String phone)
     {
-        for(Contact contact:contactList)
+        Contact result = Contact.findContectByPhone(phone, contactList);
+        return result;
+    }
+
+    public static Customer findCustomerByCompanyName(String companyName, List<Customer> List)
+    {
+        for(Customer customer:List)
         {
-            if(contact.getPhone().equals(phone))
+            if(customer.getCompanyName().equals(companyName))
             {
-                return contact;
+                return customer;
             }
         }
         return null;
@@ -69,6 +99,58 @@ public class Customer {
         else
         {
             System.out.println("No contact information is found by phone number" + phone1);
+        }
+    }
+
+    public void addContect(Contact contact)
+    {
+        Contact contact1 = findContectByPhone(contact.getPhone());
+        if(contact1 != null)
+        {
+            contactList.add(contact);
+        }
+        else
+        {
+            System.out.println("The contact has already been added to the customer.");
+            contact.printContact(1);
+        }
+    }
+
+    public void addContect(String phone, String name, String email, String position)
+    {
+        Contact contact = new Contact(phone, name, email, position);
+        addContect(contact);
+    }
+
+    public void setBasicInfo(String companyName, String address, String country)
+    {
+        setCompanyName(companyName);
+        setAddress(address);
+        setCountry(country);
+    }
+
+    public void setCustomer(String companyName, String address, String country, List<Contact> list)
+    {
+        setBasicInfo(companyName, address, country);
+        for(Contact contact : list)
+        {
+            addContect(contact);
+        }
+    }
+
+    public void setCustomer(String companyName, String address, String country, String[] phone, String[] name, String[] email, String[] position)
+    {
+        if(phone.length == name.length && phone.length == email.length && phone.length == position.length)
+        {
+            setBasicInfo(companyName, address, country);
+            for(int i = 0; i < phone.length; i++)
+            {
+                addContect(phone[i], name[i], email[i], position[i]);
+            }
+        }
+        else
+        {
+            System.out.println("There are some errors with the inputs of the contact information.");
         }
     }
 

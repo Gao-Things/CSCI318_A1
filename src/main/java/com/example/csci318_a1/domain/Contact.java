@@ -1,11 +1,17 @@
 package com.example.csci318_a1.domain;
 
+import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
+@Table(name = "Contact")
+@Data
 public class Contact {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "phone",unique = true)
     private String phone;
     @Column
     private String name;
@@ -16,6 +22,15 @@ public class Contact {
     @ManyToOne
     @JoinColumn(name = "companyName")
     private Customer clz;
+
+    public Contact() { }
+
+    public Contact(String phone, String name, String email, String position) {
+        this.phone = phone;
+        this.name = name;
+        this.email = email;
+        this.position = position;
+    }
 
     public String getPhone() {
         return phone;
@@ -34,39 +49,54 @@ public class Contact {
     }
 
     public void setPhone(String phone) {
-        this.phone = phone;
+        try {
+            this.phone = phone;
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+            System.out.println("The phone number should be unique");
+        }
     }
 
     public void setName(String name) {
-        this.name = name;
+        if(name != null && name != "")
+        {
+            this.name = name;
+        }
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        if(email != null && email != "")
+        {
+            this.email = email;
+        }
     }
 
     public void setPosition(String position) {
-        this.position = position;
+        if(position != null && position != "")
+        {
+            this.position = position;
+        }
     }
 
     public void setContact(String phone, String name, String email, String position)
     {
-        if(phone != null && phone != "")
+        setPhone(phone);
+        setName(name);
+        setEmail(email);
+        setPosition(position);
+    }
+
+    public static Contact findContectByPhone(String phone, List<Contact> List)
+    {
+        for(Contact contact:List)
         {
-            setPhone(phone);
+            if(contact.getPhone().equals(phone))
+            {
+                return contact;
+            }
         }
-        if(name != null && name != "")
-        {
-            setPhone(name);
-        }
-        if(email != null && email != "")
-        {
-            setPhone(email);
-        }
-        if(position != null && position != "")
-        {
-            setPhone(position);
-        }
+        return null;
     }
 
     public void printContact(int numOfTab)
@@ -76,8 +106,8 @@ public class Contact {
         {
             tab += "\t";
         }
-        System.out.println(tab + "Phone: \t" + name );
-        System.out.println(tab + "Name: \t" + phone);
+        System.out.println(tab + "Phone: \t\t" + phone );
+        System.out.println(tab + "Name: \t\t" + name);
         System.out.println(tab + "E-mail: \t" + email);
         System.out.println(tab + "Position: \t" + position);
     }
