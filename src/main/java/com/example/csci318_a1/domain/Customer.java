@@ -1,6 +1,6 @@
 package com.example.csci318_a1.domain;
 
-import lombok.Data;
+
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -9,20 +9,17 @@ import java.util.List;
 
 @Entity
 @Table(name = "Customer")
-@Data
 public class Customer {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "companyName",unique = true)
     private String companyName;
+    @Column
     private String address;
     @Column
     private String country;
     /*test updating db by JPA (spring.jpa.hibernate.ddl-auto=update) automatically (adding an attribute)
     @Column
     private String testAttribute;*/
-    @OneToMany(mappedBy = "clz")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private List<Contact> contactList;
 
     public Customer() { }
@@ -71,6 +68,12 @@ public class Customer {
         return contactList;
     }
 
+    public Customer getBasicInfo()
+    {
+        Customer basicInfo = new Customer(companyName, address, country);
+        return basicInfo;
+    }
+
     public Contact findContectByPhone(String phone)
     {
         Contact result = Contact.findContectByPhone(phone, contactList);
@@ -105,8 +108,9 @@ public class Customer {
     public void addContect(Contact contact)
     {
         Contact contact1 = findContectByPhone(contact.getPhone());
-        if(contact1 != null)
+        if(contact1 == null)
         {
+            contact.setCustomer(this);
             contactList.add(contact);
         }
         else
@@ -132,6 +136,7 @@ public class Customer {
     public void setCustomer(String companyName, String address, String country, List<Contact> list)
     {
         setBasicInfo(companyName, address, country);
+        contactList.clear();
         for(Contact contact : list)
         {
             addContect(contact);
@@ -143,6 +148,7 @@ public class Customer {
         if(phone.length == name.length && phone.length == email.length && phone.length == position.length)
         {
             setBasicInfo(companyName, address, country);
+            contactList.clear();
             for(int i = 0; i < phone.length; i++)
             {
                 addContect(phone[i], name[i], email[i], position[i]);

@@ -1,6 +1,6 @@
 package com.example.csci318_a1.domain;
 
-import lombok.Data;
+
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -8,7 +8,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "Contact")
-@Data
 public class Contact {
     @Id
     @Column(name = "phone",unique = true)
@@ -19,9 +18,10 @@ public class Contact {
     private String email;
     @Column
     private String position;
+
     @ManyToOne
     @JoinColumn(name = "companyName")
-    private Customer clz;
+    private Customer customer;
 
     public Contact() { }
 
@@ -77,6 +77,10 @@ public class Contact {
         {
             this.position = position;
         }
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public void setContact(String phone, String name, String email, String position)

@@ -15,13 +15,18 @@ class Csci318A1ApplicationTests {
 
     @Autowired
     ContactDao contactDao;
+    @Autowired
+    CustomerDao customerDao;
     @Test
     void test1() {
         Contact contact1 = new Contact("9553121", "test_name", "test_email", "test_position");
         contact1.printContact(0);
         contactDao.save(contact1);
         List<Contact> list = contactDao.findAll();
-        System.out.println(list.size());
+        for(Contact contact : list)
+        {
+            contact.printContact(1);
+        }
     }
     @Test
     void test2() {
@@ -37,13 +42,21 @@ class Csci318A1ApplicationTests {
             contact.printContact(1);
         }
     }
-    @Autowired
-    CustomerDao customerDao;
+
     @Test
     void test3()
     {
         Customer customer1 = new Customer("Company name 1", "Address1", "Country 1");
-        customerDao.save(customer1);
+        customer1.addContect("123456789", "test_name1", "test_email1", "test_position1");
+        customer1.addContect("987654321", "test_name2", "test_email2", "test_position2");
+        customer1.printCustomer(1);
+        customerDao.save(customer1.getBasicInfo());
+        contactDao.saveAll(customer1.getContactList());
+        List<Customer> list = customerDao.findAll();
+        for(Customer customer : list)
+        {
+            customer.printCustomer(1);
+        }
     }
 
 

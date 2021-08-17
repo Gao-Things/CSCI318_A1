@@ -47,7 +47,16 @@ class test {
     public String test3()
     {
         Customer customer1 = new Customer("Company name 1", "Address1", "Country 1");
-        customerDao.save(customer1);
+        customer1.addContect("123456789", "test_name1", "test_email1", "test_position1");
+        customer1.addContect("987654321", "test_name2", "test_email2", "test_position2");
+        customer1.printCustomer(1);
+        customerDao.save(customer1.getBasicInfo());
+        contactDao.saveAll(customer1.getContactList());
+        List<Customer> list = customerDao.findAll();
+        for(Customer customer : list)
+        {
+            customer.printCustomer(1);
+        }
         return "test case3";
     }
 }
