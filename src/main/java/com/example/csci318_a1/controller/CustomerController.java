@@ -45,7 +45,7 @@ public class CustomerController {
     {
         return customerService.updateCustomerBasic("companyName1", "companyName","addressNew", "country");
     }
-
+    //if this one is tested, the later ones would not be successful because the companyName has been changed
     @RequestMapping("/test6-2")
     @ResponseBody
     public String test62()
