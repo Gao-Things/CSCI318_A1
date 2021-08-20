@@ -1,13 +1,13 @@
-package com.example.csci318_a1;
+package com.CSIT318group2.Task1;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Csci318A1ApplicationTests {
+class Task1ApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
+	@Test
+	void contextLoads() {
+	}
 
 }
