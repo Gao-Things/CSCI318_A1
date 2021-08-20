@@ -18,37 +18,6 @@ public class CustomerServiceImpl implements CustomerService {
     private Customer customer = new Customer();
 
     @Override
-    public void test1() {
-        Contact contact1 = new Contact("9553121", "test_name", "test_email", "test_position");
-        customer.addContect(contact1);
-        contactDao.save(contact1);
-    }
-
-    @Override
-    public void test2() {
-        Contact contact1 = new Contact("123454321", "test_name", "test_email", "test_position");
-        Contact contact2 = new Contact("123454321", "test_name2", "test_email2", "test_position2");
-        contact1.printContact(0);
-        contact2.printContact(0);
-        contactDao.save(contact1);
-        contactDao.save(contact2);
-        List<Contact> list = contactDao.findAll();
-        for(Contact contact : list)
-        {
-            contact.printContact(1);
-        }
-    }
-
-
-    @Override
-    public void test3(){
-        customer.reSetBasicInfo("Company name 1", "Address1", "Country 1");
-        customer.addContect("123456789", "test_name1", "test_email1", "test_position1");
-        customer.addContect("987654321", "test_name2", "test_email2", "test_position2");
-        customerDao.save(customer);
-    }
-
-    @Override
     public String createCustomerBasic( String companyName, String address, String country)
     {
         customer = customerDao.findById(companyName).orElse(null);
@@ -64,13 +33,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public String updateCustomerBasic( String companyNameOriginal , String companyNameNew, String address, String country )
+    public String updateCustomerBasic( String companyNameOriginal, String companyNameNew, String address, String country )
     {
         customer = customerDao.findById(companyNameOriginal).orElse(null);
-        if(customer != null) {
-            if(companyNameOriginal.equals(companyNameNew))
+        if(customer != null && !customerDao.existsById(companyNameNew)) {
+            if(!companyNameOriginal.equals(companyNameNew))
             {
-                customerDao.delete(customer);
+                customerDao.delete(customer.clone());
             }
             customer.reSetBasicInfo(companyNameNew, address, country);
             customerDao.save(customer);
@@ -78,7 +47,8 @@ public class CustomerServiceImpl implements CustomerService {
         }
         else
         {
-            return "The customer with company name, " + companyNameOriginal + ", is not existed.";
+            return "The customer with company name, " + companyNameOriginal + ", is not existed or the customer with " +
+                    "company name, " + companyNameOriginal + ", is existed.";
         }
 
     }
@@ -88,8 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
     {
         customer = customerDao.findById(companyName).orElse(null);
         if(customer != null) {
-            Contact contact =  contactDao.findById(phone).orElse(null);
-            if(contact != null)
+            if(!contactDao.existsById(phone))
             {
                 customer.addContect(phone, name, email, country);
                 customerDao.save(customer);
@@ -97,7 +66,7 @@ public class CustomerServiceImpl implements CustomerService {
             }
             else
             {
-                return "The contact can't be added because the phone number has already been registered by another contact.";
+                return "The contact can't be added because the phone number has already been registered by you or another customer.";
             }
         }
         else
@@ -107,20 +76,29 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public String updateContact(String companyName, String phoneOriginal, String phoneNew, String name, String email, String country)
+    public String updateContact(String companyName, String phoneOriginal, String phoneNew, String name, String email, String position)
     {
         customer = customerDao.findById(companyName).orElse(null);
         if(customer != null) {
-            int flag = customer.addContect()
-            if(contact != null)
+            if(contactDao.existsById(phoneOriginal) && !contactDao.existsById(phoneNew))
             {
-                contact.reSetContact(phoneNew, name, email, country);
-                contactDao.save(contact);
-                return "Update the contact information successful";
+                Contact contact = customer.findContectByPhone(phoneOriginal);
+                if(contact != null)
+                {
+                    customerDao.delete(customer.clone());
+                    contact.reSetContact(phoneNew, name, email, position);
+                    customerDao.save(customer);
+                    return "Update the contact information successful";
+                }
+                else
+                {
+                    return "The customer with company name, " + companyName + " doesn't have the contact with phone number " + phoneOriginal;
+                }
             }
             else
             {
-                return "The customer with company name, " + companyName + "doesn't have the contact with phone number " + phoneOriginal;
+                return "The contact with phone number " + phoneOriginal + " isn't existed or the contact with phone number " +
+                        phoneNew + " is existed";
             }
         }
         else

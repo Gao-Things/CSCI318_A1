@@ -55,21 +55,21 @@ public class Contact implements Cloneable {
     }
 
     public void setName(String name) {
-        if(name != null && name != "")
+        if(name != null && !name.equals(""))
         {
             this.name = name;
         }
     }
 
     public void setEmail(String email) {
-        if(email != null && email != "")
+        if(email != null && !email.equals(""))
         {
             this.email = email;
         }
     }
 
     public void setPosition(String position) {
-        if(position != null && position != "")
+        if(position != null && !position.equals(""))
         {
             this.position = position;
         }
