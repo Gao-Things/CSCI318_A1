@@ -1,8 +1,6 @@
 package com.example.csci318_a1.domain;
 
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +14,10 @@ public class Customer {
     private String address;
     @Column
     private String country;
-    /*test updating db by JPA (spring.jpa.hibernate.ddl-auto=update) automatically (adding an attribute)
-    @Column
-    private String testAttribute;*/
-    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     private List<Contact> contactList;
 
-    public Customer() { }
+    public Customer() {contactList = new ArrayList<>();}
 
     public Customer(String companyName, String address, String country) {
         this.companyName = companyName;
@@ -65,10 +60,20 @@ public class Customer {
     }
 
     public List<Contact> getContactList() {
+        List<Contact> contactList = new ArrayList<Contact>();
+        for(Contact c : this.contactList)
+        {
+            contactList.add(c.clone());
+        }
         return contactList;
     }
 
-    public Customer getBasicInfo()
+    public void setContactList(List<Contact> contactList) {
+        this.contactList = contactList;
+    }
+
+    //一定一定不能叫get方法 不然会错误执行
+    public Customer findBasicInfo()
     {
         Customer basicInfo = new Customer(companyName, address, country);
         return basicInfo;
@@ -97,7 +102,7 @@ public class Customer {
         Contact contact = findContectByPhone(phone1);
         if(contact != null)
         {
-            contact.setContact(phone2, name, email, position);
+            contact.reSetContact(phone2, name, email, position);
         }
         else
         {
@@ -105,18 +110,20 @@ public class Customer {
         }
     }
 
-    public void addContect(Contact contact)
+    public int addContect(Contact contact)
     {
         Contact contact1 = findContectByPhone(contact.getPhone());
         if(contact1 == null)
         {
             contact.setCustomer(this);
             contactList.add(contact);
+            return 0;
         }
         else
         {
             System.out.println("The contact has already been added to the customer.");
             contact.printContact(1);
+            return 1;
         }
     }
 
@@ -126,16 +133,16 @@ public class Customer {
         addContect(contact);
     }
 
-    public void setBasicInfo(String companyName, String address, String country)
+    public void reSetBasicInfo(String companyName, String address, String country)
     {
         setCompanyName(companyName);
         setAddress(address);
         setCountry(country);
     }
 
-    public void setCustomer(String companyName, String address, String country, List<Contact> list)
+    public void reSetCustomer(String companyName, String address, String country, List<Contact> list)
     {
-        setBasicInfo(companyName, address, country);
+        reSetBasicInfo(companyName, address, country);
         contactList.clear();
         for(Contact contact : list)
         {
@@ -143,11 +150,11 @@ public class Customer {
         }
     }
 
-    public void setCustomer(String companyName, String address, String country, String[] phone, String[] name, String[] email, String[] position)
+    public void reSetCustomer(String companyName, String address, String country, String[] phone, String[] name, String[] email, String[] position)
     {
         if(phone.length == name.length && phone.length == email.length && phone.length == position.length)
         {
-            setBasicInfo(companyName, address, country);
+            reSetBasicInfo(companyName, address, country);
             contactList.clear();
             for(int i = 0; i < phone.length; i++)
             {

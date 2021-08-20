@@ -1,16 +1,12 @@
 package com.example.csci318_a1.domain;
 
-
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "Contact")
-public class Contact {
+public class Contact implements Cloneable {
     @Id
-    @Column(name = "phone",unique = true)
     private String phone;
     @Column
     private String name;
@@ -19,7 +15,7 @@ public class Contact {
     @Column
     private String position;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "companyName")
     private Customer customer;
 
@@ -79,11 +75,28 @@ public class Contact {
         }
     }
 
+    /*public Customer getCustomer() {
+        return customer;
+    }*/
+
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
 
-    public void setContact(String phone, String name, String email, String position)
+    public Contact clone()
+    {
+        Contact c = null;
+        try {
+            c = (Contact) super.clone();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            System.out.println("The contact with phone = /'" + phone + "/' clone fails");
+        }
+        return c;
+    }
+
+    public void reSetContact(String phone, String name, String email, String position)
     {
         setPhone(phone);
         setName(name);
