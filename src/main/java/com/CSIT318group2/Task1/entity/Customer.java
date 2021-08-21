@@ -1,7 +1,5 @@
 package com.CSIT318group2.Task1.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 
 @Entity
