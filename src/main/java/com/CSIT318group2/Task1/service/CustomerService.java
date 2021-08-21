@@ -14,6 +14,10 @@ public class CustomerService implements CustomerServiceInterface {
     @Autowired
     private CustomerRepository customerRepository;
 
+    private Customer getCustomerById(Long customerId) {
+        return customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Errors Occurred"));
+    }
+
     @Override
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
@@ -26,17 +30,17 @@ public class CustomerService implements CustomerServiceInterface {
 
     @Override
     public Customer fetchCustomerById(Long customerId) {
-        return customerRepository.findById(customerId).get();
+        return getCustomerById(customerId);
     }
 
     @Override
     public Customer fetchCustomerContact(Long customerId) {
-        return customerRepository.findById(customerId).get();
+        return getCustomerById(customerId);
     }
 
     @Override
     public Customer saveContact(Long customerId, Contact contact) {
-        Customer customer = customerRepository.findById(customerId).get();
+        Customer customer = getCustomerById(customerId);
         customer.setContact(contact);
         return customerRepository.save(customer);
     }
